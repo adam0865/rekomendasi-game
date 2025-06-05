@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekomendasi Game Cyberpunk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0f0f1b;
+            color: #00fff7;
+            margin: 0;
+            padding: 40px;
+            background-image: linear-gradient(145deg, #0f0f1b 0%, #1a1a2e 100%);
+        }
+
+        h1 {
+            color: #f72585;
+            text-shadow: 0 0 10px #f72585;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffb703;
+        }
+
+        select, button {
+            padding: 10px;
+            margin-top: 10px;
+            width: 220px;
+            background-color: #1a1a2e;
+            border: 2px solid #00fff7;
+            color: #ffffff;
+            font-size: 1em;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #f72585;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #7209b7;
+        }
+
+        #result {
+            margin-top: 40px;
+            background: #1f1f2e;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #00fff7;
+            box-shadow: 0 0 20px #00fff7;
+        }
+
+        select:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00fff7;
+        }
+
+        .input-cyberpunk {
+            padding: 10px;
+            margin-top: 10px;
+            width: 220px;
+            background-color: #1a1a2e;
+            border: 2px solid #00fff7;
+            color: #ffffff;
+            font-size: 1em;
+            border-radius: 6px;
+            font-family: 'Orbitron', sans-serif;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .input-cyberpunk:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00fff7;
+            background-color: #151520;
+        }
+
+    </style>
+    <script>
+        async function getRecommendations() {
+            const device = document.getElementById('device').value;
+            const genre = document.getElementById('genre').value;
+            const mood = document.getElementById('mood').value;
+
+            const response = await fetch("/recommend", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ device, genre, mood })
+            });
+
+            const data = await response.json();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            if (data.error) {
+                resultDiv.innerHTML = `<p style="color:red">${data.error}</p>`;
+            } else {
+                resultDiv.innerHTML = data.reply;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>🎮 Rekomendasi Game 🎮</h1>
+
+    <label for="device">Pilih Perangkat:</label>
+    <select id="device">
+        <option value="PC">PC</option>
+        <option value="Konsol">Konsol</option>
+        <option value="Mobile">Mobile</option>
+    </select>
+
+    <label for="genre">Pilih Genre:</label>
+    <select id="genre">
+        <option value="Aksi">Aksi</option>
+        <option value="Petualangan">Petualangan</option>
+        <option value="RPG">RPG</option>
+        <option value="Strategi">Strategi</option>
+        <option value="Olahraga">Olahraga</option>
+        <option value="Simulasi">Simulasi</option>
+        <option value="Puzzle">Puzzle</option>
+    </select>
+
+    <label for="mood">Pilih Mood:</label>
+    <label for="mood">Deskripsikan Mood yang Diinginkan:</label>
+    <input type="text" id="mood" class="input-cyberpunk" placeholder="Contoh: Seru, Menegangkan, Nostalgia...">
+
+
+
+    <br>
+    <button onclick="getRecommendations()">🔮 Dapatkan Rekomendasi</button>
+
+    <div id="result"></div>
+</body>
+</html>
