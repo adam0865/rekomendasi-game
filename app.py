@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, render_template
 import google.generativeai as genai
-
+import os
 # Ganti dengan API key Gemini kamu
-genai.configure(api_key="YOUR_API_KEY")
+genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 
 model = genai.GenerativeModel("gemini-2.0-flash")
 
