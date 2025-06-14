@@ -5,7 +5,6 @@
   <title>🎮 AI Game Recommendation</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    /* (CSS sama persis seperti yang kamu punya) */
     * {
       box-sizing: border-box;
       font-family: 'Orbitron', sans-serif;
@@ -152,6 +151,7 @@
       }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <h1>🎮 AI Game Recommendation</h1>
@@ -166,6 +166,12 @@
   <div id="loader">
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
   </div>
+
+  <div style="margin-top: 40px; text-align: center;">
+    <h3 style="color:#00ffff">📱 Scan untuk buka di HP:</h3>
+    <div id="qrcode"></div>
+  </div>
+
 
   <div id="result"></div>
   <div id="downloadBtnContainer"></div>
@@ -245,6 +251,18 @@
       a.click();
       URL.revokeObjectURL(url);
     }
+    // Membuat QR Code dari URL saat ini
+    window.onload = function () {
+      const currentURL = window.location.href;
+      new QRCode(document.getElementById("qrcode"), {
+        text: currentURL,
+        width: 160,
+        height: 160,
+        colorDark: "#00ffff",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    };
   </script>
 </body>
 </html>
