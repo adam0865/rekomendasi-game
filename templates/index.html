@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>🎮 AI Game Recommendation</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -42,11 +43,10 @@
       font-weight: 700;
       display: block;
       max-width: 300px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 20px auto 10px;
+      text-align: center;
     }
     textarea {
-      margin-top: 10px;
       width: 100%;
       max-width: 500px;
       height: 100px;
@@ -55,7 +55,6 @@
       border: 1px solid #00ffff;
       background-color: #1e1e1e;
       color: #fff;
-      font-family: 'Orbitron', sans-serif;
       font-size: 1rem;
       resize: vertical;
     }
@@ -70,7 +69,8 @@
       cursor: pointer;
       box-shadow: 0 0 12px #ff00cc88;
       transition: background 0.3s, transform 0.2s;
-      max-width: 200px;
+      max-width: 220px;
+      margin: 10px;
     }
     button:hover {
       background: #cc00aa;
@@ -79,7 +79,7 @@
     #result {
       margin-top: 30px;
       width: 100%;
-      max-width: 800px; /* Tambahkan jika perlu lebih besar */
+      max-width: 800px;
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -132,36 +132,32 @@
       animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
       border-color: #00ffff transparent transparent transparent;
     }
-    .lds-ring div:nth-child(1) {
-      animation-delay: -0.45s;
-    }
-    .lds-ring div:nth-child(2) {
-      animation-delay: -0.3s;
-    }
-    .lds-ring div:nth-child(3) {
-      animation-delay: -0.15s;
-    }
+    .lds-ring div:nth-child(1) { animation-delay: -0.45s; }
+    .lds-ring div:nth-child(2) { animation-delay: -0.3s; }
+    .lds-ring div:nth-child(3) { animation-delay: -0.15s; }
+
     @keyframes lds-ring {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
     @media (max-width: 500px) {
       textarea, button {
         width: 100%;
       }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <h1>🎮 AI Game Recommendation</h1>
 
-  <label for="prompt">🎲 Enter your prompt for game recommendation:</label>
-  <textarea id="prompt" placeholder="Contoh: Saya suka game FPS kompetitif dan bermain bersama teman. Rekomendasikan game terbaik."></textarea>
+  <label for="prompt">🎲 Masukkan preferensi game kamu:</label>
+  <textarea id="prompt" placeholder="Contoh: Saya suka game petualangan dengan cerita yang kuat."></textarea>
 
-  <br>
+  <div>
     <button onclick="rekomendasikan()">🔮 Dapatkan Rekomendasi</button>
-    <button type="button" onclick="startListening()">🎤 Cari dengan Suara</button>
+    <button onclick="startListening()">🎤 Cari dengan Suara</button>
+  </div>
 
   <div id="loader">
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
@@ -171,7 +167,6 @@
     <h3 style="color:#00ffff">📱 Scan untuk buka di HP:</h3>
     <div id="qrcode"></div>
   </div>
-
 
   <div id="result"></div>
   <div id="downloadBtnContainer"></div>
@@ -201,46 +196,48 @@
           body: JSON.stringify({ prompt }),
         });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
 
-      const data = await response.json();
-      loader.style.display = "none";
+        const data = await response.json();
+        loader.style.display = "none";
 
-      if (data.recommendation) {
-        resultDiv.innerHTML = `
-          <div class="card">
-            <h3>🎮 Recommendation from AI</h3>
-            <p>${data.recommendation}</p>
-          </div>
-        `;
-        downloadDiv.innerHTML = `
+        if (data.recommendation) {
+          resultDiv.innerHTML = `
+            <div class="card">
+              <h3>🎮 Rekomendasi dari AI</h3>
+              <p>${data.recommendation}</p>
+            </div>
+          `;
+          downloadDiv.innerHTML = `
             <button onclick="downloadRecommendation()">⬇️ Simpan sebagai TXT</button>
           `;
-      } else {
-        resultDiv.innerHTML = `<p style="color: #f88;">Error: ${data.error}</p>`;
+        } else {
+          resultDiv.innerHTML = `<p style="color: #f88;">Error: ${data.error}</p>`;
         }
       } catch (error) {
         loader.style.display = "none";
         resultDiv.innerHTML = `<p style="color: #f88;">Terjadi error: ${error.message}</p>`;
       }
     }
+
     function startListening() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'id-ID'; // Bahasa Indonesia
+      recognition.lang = 'id-ID';
       recognition.start();
 
       recognition.onresult = function(event) {
         const hasil = event.results[0][0].transcript;
         document.getElementById("prompt").value = hasil;
-        rekomendasikan(); // otomatis kirim permintaan setelah suara dikenali
+        rekomendasikan();
       };
 
       recognition.onerror = function(event) {
         alert('Gagal mengenali suara: ' + event.error);
       };
     }
+
     function downloadRecommendation() {
       const text = document.querySelector("#result .card p")?.innerText || "";
       const blob = new Blob([text], { type: "text/plain" });
@@ -251,6 +248,7 @@
       a.click();
       URL.revokeObjectURL(url);
     }
+
     window.onload = function () {
       const currentURL = window.location.href;
       new QRCode(document.getElementById("qrcode"), {
