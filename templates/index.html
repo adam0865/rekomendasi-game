@@ -227,15 +227,24 @@
 
       recognition.onresult = function(event) {
         const hasil = event.results[0][0].transcript;
-        document.querySelector("input[name='query']").value = hasil;
+        document.getElementById("prompt").value = hasil;
+        rekomendasikan(); // otomatis kirim permintaan setelah suara dikenali
       };
 
       recognition.onerror = function(event) {
         alert('Gagal mengenali suara: ' + event.error);
       };
     }
+    function downloadRecommendation() {
+      const text = document.querySelector("#result .card p")?.innerText || "";
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "rekomendasi_game.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   </script>
-
-
 </body>
 </html>
